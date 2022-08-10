@@ -1,2 +1,6 @@
+.z3-trace
+
 build/
 .vscode/
+
+vcpkg/
