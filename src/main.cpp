@@ -1,15 +1,22 @@
 #include <iostream>
 #include "z3++.h"
 
-int main()
+void example_p_intersect_q()
 {
   z3::context c;
-  auto x = c.bool_const("x");
-  auto y = c.bool_const("y");
-  auto conjecture = (x || y) && (!x || y) && (!x || !y);
+  // introduce `p` and `q`
+  auto p = c.bool_const("x");
+  auto q = c.bool_const("y");
+  // `p /\ q` (operation overloading, you can also use `z3::operator&&`)
+  auto intersection = (p && q);
+  // construct solver from context
   z3::solver solver(c);
-  solver.add(conjecture);
-  std::cout << "check: " << solver.check() << std::endl;
-  std::cout << "get model: " << solver.get_model() << std::endl;
-  return 0;
+  solver.add(intersection);
+  std::cout << solver.check() << "\n\n";
+  std::cout << solver.get_model() << "\n\n";
+}
+
+int main()
+{
+  example_p_intersect_q();
 }
