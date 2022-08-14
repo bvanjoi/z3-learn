@@ -68,7 +68,16 @@ In above case, z3 only output one row in all solutions of `P \/ Q`.
 | 2     | F   | T   | T        |
 | 3     | F   | F   | F        |
 
-Now, we want to get all first 3 rows, in fact, we can get a different from solutions we get before by add negation of each solution given by solve method. And we doing this until no new solution can be found.
+Now, we want to get all first 3 rows, in fact, we can get a different from solutions we get before by add negation of each solution given by solve method. And we doing this until no new solution can be found:
+
+```cpp
+f = p || q;
+while (solver.check() == z3::check_result::sat) {
+  f = f && ~(p && q);
+  solver.add(f);
+  solver.get_model();
+}
+```
 
 ## TODO: sat && validity
 
