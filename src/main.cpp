@@ -1,22 +1,57 @@
 #include <iostream>
 #include "z3++.h"
+#include <vector>
+#include <assert.h>
+#include <algorithm>
+#include <string>
 
-void example_p_intersect_q()
+std::vector<z3::model> set_all(z3::context &ctx, std::vector<z3::expr> props, z3::expr f)
+{
+  z3::solver solver(ctx);
+  solver.add(f);
+  std::vector<z3::model> result = {};
+  auto next_f = f;
+  while (solver.check() == z3::check_result::sat)
+  {
+    auto model = solver.get_model();
+    result.push_back(model);
+    std::vector<z3::expr> blocks = {};
+    for (auto prop : props)
+    {
+
+      if (model.eval(prop, true).is_true())
+      {
+        blocks.push_back(prop);
+      }
+      else
+      {
+        blocks.push_back(!prop);
+      }
+    }
+
+    auto next = blocks[0];
+    for (int i = 1; i < blocks.size(); i += 1)
+    {
+      next = next && blocks[i];
+    }
+
+    next_f = next_f && !next;
+
+    solver.add(next_f);
+  }
+  return result;
+}
+
+std::vector<z3::model> p_union_q()
 {
   z3::context c;
-  // introduce `p` and `q`
-  auto p = c.bool_const("x");
-  auto q = c.bool_const("y");
-  // `p /\ q` (operation overloading, you can also use `z3::operator&&`)
-  auto intersection = (p && q);
-  // construct solver from context
-  z3::solver solver(c);
-  solver.add(intersection);
-  std::cout << solver.check() << "\n\n";
-  std::cout << solver.get_model() << "\n\n";
+  auto p = c.bool_const("p");
+  auto q = c.bool_const("q");
+
+  return set_all(c, {p, q}, p || q);
 }
 
 int main()
 {
-  example_p_intersect_q();
+  return 0;
 }
