@@ -79,9 +79,18 @@ while (solver.check() == z3::check_result::sat) {
 }
 ```
 
-## TODO: sat && validity
+## Validity
 
-Propositional logic is just a small subset of formulas handled by Z3,
+A formula is valid if it is true for all values of its terms. The relationship between the validity and satisfiability of a proposition P is following:
+
+```
+valid(P) <=> unsat(~P)
+```
+
+So:
+
+- `P \/ Q` is not valid because `~(P \/ Q)` is satisfiable.
+- `~~P -> P` is valid.
 
 ## Reference
 
